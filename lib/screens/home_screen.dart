@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/streak_card.dart';
 import '../widgets/xp_card.dart';
+import '../widgets/course_card.dart';
+import '../widgets/progress_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,11 +12,11 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Quadra', 
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-          color: Colors.orange,
+          'Quadra',
+          style: TextStyle(
+            fontWeight: FontWeight.bold, 
+            fontSize: 24,
+            color: Colors.orange,
           ),
         ),
         actions: const [
@@ -24,8 +26,15 @@ class HomeScreen extends StatelessWidget {
           SizedBox(width: 16),
         ],
       ),
-      body: const Center(
-        child: Text('...'),
+      body: const SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 16), 
+            CourseCard(),
+            ProgressCard(),
+          ],
+        ),
       ),
     );
   }
