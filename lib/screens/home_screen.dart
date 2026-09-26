@@ -3,6 +3,7 @@ import '../widgets/streak_card.dart';
 import '../widgets/xp_card.dart';
 import '../widgets/course_card.dart';
 import '../widgets/progress_card.dart';
+import '../widgets/daily_goal_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -30,9 +31,11 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 16), 
+            SizedBox(height: 16),
             CourseCard(),
             ProgressCard(),
+            DailyGoalCard(),
+            SizedBox(height: 24),
           ],
         ),
       ),

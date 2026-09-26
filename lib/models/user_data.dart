@@ -4,6 +4,8 @@ class UserData {
   final String currentLanguage;
   final String currentUnit;
   final double progress;
+  final int currentDailyXP;
+  final int dailyGoalXP;
 
   UserData({
     required this.streak,
@@ -11,6 +13,8 @@ class UserData {
     required this.currentLanguage,
     required this.currentUnit,
     required this.progress,
+    required this.currentDailyXP,
+    required this.dailyGoalXP,
   });
 }
 
@@ -20,4 +24,6 @@ final dummyUser = UserData(
   currentLanguage: 'Bahasa Spanyol',
   currentUnit: 'Unit 1: Perkenalan Dasar',
   progress: 0.8,
+  currentDailyXP: 30,
+  dailyGoalXP: 50,
 );
