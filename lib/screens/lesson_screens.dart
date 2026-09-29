@@ -73,19 +73,24 @@ class _LessonScreenState extends State<LessonScreen> {
                   String option = currentLesson.options[index];
                   bool isSelected = selectedAnswer == option;
 
+                  // Warna default/normal untuk semua opsi
                   Color backgroundColor = Colors.white;
                   Color borderColor = isSelected ? Colors.blue : Colors.grey;
 
-                  if (isAnswerChecked && isSelected) {
-                    if (selectedAnswer == currentLesson.correctAnswer) {
-                      backgroundColor = Colors.green.shade100;
-                      borderColor = Colors.green;
+                  // PERBAIKAN DI SINI:
+                  // Hanya ubah warna JIKA opsi ini adalah yang dipilih oleh user
+                  if (isSelected) {
+                    if (isAnswerChecked) {
+                      if (selectedAnswer == currentLesson.correctAnswer) {
+                        backgroundColor = Colors.green.shade100;
+                        borderColor = Colors.green;
+                      } else {
+                        backgroundColor = Colors.red.shade100;
+                        borderColor = Colors.red;
+                      }
                     } else {
-                      backgroundColor = Colors.red.shade100;
-                      borderColor = Colors.red;
+                      backgroundColor = Colors.blue.shade100;
                     }
-                  } else if (isSelected) {
-                    backgroundColor = Colors.blue.shade100;
                   }
 
                   return Container(
@@ -112,6 +117,22 @@ class _LessonScreenState extends State<LessonScreen> {
                 },
               ),
             ),
+
+            // Tampilkan teks info jawaban yang benar jika jawaban user SALAH
+            if (isAnswerChecked && selectedAnswer != currentLesson.correctAnswer)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Text(
+                  'Jawaban yang benar: ${currentLesson.correctAnswer}',
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
             SizedBox(
               height: 50,
               child: ElevatedButton(
