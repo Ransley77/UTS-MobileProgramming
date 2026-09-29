@@ -48,6 +48,7 @@ class _LessonScreenState extends State<LessonScreen> {
   @override
   Widget build(BuildContext context) {
     Lesson currentLesson = lessons[currentLessonIndex];
+    double progress = (currentLessonIndex + 1) / lessons.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -58,14 +59,59 @@ class _LessonScreenState extends State<LessonScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              currentLesson.question,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 12,
+                backgroundColor: Colors.grey.shade300,
+                color: Colors.green,
               ),
             ),
             const SizedBox(height: 20),
+
+            Row(
+              children: [
+                IconButton(
+                  iconSize: 32,
+                  icon: const Icon(Icons.volume_up, color: Colors.blue),
+                  onPressed: () {},
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    currentLesson.question,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+
+            Container(
+              constraints: const BoxConstraints(
+              minHeight: 80, ),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300, width: 2),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                selectedAnswer ?? 'Pilih atau ketik jawaban di sini...',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: selectedAnswer == null ? Colors.grey : Colors.black,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
             Expanded(
               child: ListView.builder(
                 itemCount: currentLesson.options.length,
@@ -73,12 +119,9 @@ class _LessonScreenState extends State<LessonScreen> {
                   String option = currentLesson.options[index];
                   bool isSelected = selectedAnswer == option;
 
-                  // Warna default/normal untuk semua opsi
                   Color backgroundColor = Colors.white;
                   Color borderColor = isSelected ? Colors.blue : Colors.grey;
 
-                  // PERBAIKAN DI SINI:
-                  // Hanya ubah warna JIKA opsi ini adalah yang dipilih oleh user
                   if (isSelected) {
                     if (isAnswerChecked) {
                       if (selectedAnswer == currentLesson.correctAnswer) {
@@ -117,8 +160,6 @@ class _LessonScreenState extends State<LessonScreen> {
                 },
               ),
             ),
-
-            // Tampilkan teks info jawaban yang benar jika jawaban user SALAH
             if (isAnswerChecked && selectedAnswer != currentLesson.correctAnswer)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
@@ -132,7 +173,6 @@ class _LessonScreenState extends State<LessonScreen> {
                   textAlign: TextAlign.center,
                 ),
               ),
-
             SizedBox(
               height: 50,
               child: ElevatedButton(
