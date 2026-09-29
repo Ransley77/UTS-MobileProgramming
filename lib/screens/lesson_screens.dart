@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import '../models/lesson.dart';
 import '../lesson_data/lesson_data_jepang.dart';
+import '../lesson_data/lesson_data_inggris.dart';
+import '../lesson_data/lesson_data_spain.dart';
 
 class LessonScreen extends StatefulWidget {
-  const LessonScreen({super.key});
+  final String language;
+
+  const LessonScreen({
+    super.key,
+    this.language = 'jepang',
+  });
 
   @override
   State<LessonScreen> createState() => _LessonScreenState();
@@ -13,10 +20,23 @@ class _LessonScreenState extends State<LessonScreen> {
   int currentLessonIndex = 0;
   String? selectedAnswer;
   bool isAnswerChecked = false;
+  int lives = 3;
+
+  List<Lesson> get activeLessons {
+    switch (widget.language.toLowerCase()) {
+      case 'inggris':
+        return lessonsInggris;
+      case 'spain':
+        return lessonsSpain;
+      case 'jepang':
+      default:
+        return lessonsJepang;
+    }
+  }
 
   void nextLesson() {
     setState(() {
-      if (currentLessonIndex < lessons.length - 1) {
+      if (currentLessonIndex < activeLessons.length - 1) {
         currentLessonIndex++;
         selectedAnswer = null;
         isAnswerChecked = false;
@@ -25,7 +45,7 @@ class _LessonScreenState extends State<LessonScreen> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Selesai!'),
-            content: const Text('Kamu telah menyelesaikan semua soal.'),
+            content: const Text('Selamat anda telah berhasil menyelesaikan semua soal.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -34,6 +54,7 @@ class _LessonScreenState extends State<LessonScreen> {
                     currentLessonIndex = 0;
                     selectedAnswer = null;
                     isAnswerChecked = false;
+                    lives = 3;
                   });
                 },
                 child: const Text('Ulangi'),
@@ -45,31 +66,81 @@ class _LessonScreenState extends State<LessonScreen> {
     });
   }
 
+  void checkAnswer() {
+    setState(() {
+      isAnswerChecked = true;
+      if (selectedAnswer != activeLessons[currentLessonIndex].correctAnswer) {
+        lives--;
+        if (lives <= 0) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => AlertDialog(
+              title: const Text('Kesempatan Anda Telah Habis!'),
+              content: const Text('Nyawa anda sudah habis. Coba lagi dari awal.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      currentLessonIndex = 0;
+                      selectedAnswer = null;
+                      isAnswerChecked = false;
+                      lives = 3;
+                    });
+                  },
+                  child: const Text('Coba Lagi'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Lesson> lessons = activeLessons;
     Lesson currentLesson = lessons[currentLessonIndex];
     double progress = (currentLessonIndex + 1) / lessons.length;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Belajar Bahasa Jepang'),
+        title: Text('Belajar Bahasa ${widget.language.toUpperCase()}'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: LinearProgressIndicator(
-                value: progress,
-                minHeight: 12,
-                backgroundColor: Colors.grey.shade300,
-                color: Colors.green,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      minHeight: 12,
+                      backgroundColor: Colors.grey.shade300,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Row(
+                  children: List.generate(
+                    3,
+                    (index) => Icon(
+                      Icons.favorite,
+                      color: index < lives ? Colors.red : Colors.grey.shade300,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
-
             Row(
               children: [
                 IconButton(
@@ -90,10 +161,8 @@ class _LessonScreenState extends State<LessonScreen> {
               ],
             ),
             const SizedBox(height: 15),
-
             Container(
-              constraints: const BoxConstraints(
-              minHeight: 80, ),
+              constraints: const BoxConstraints(minHeight: 80),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.grey.shade100,
@@ -111,7 +180,6 @@ class _LessonScreenState extends State<LessonScreen> {
               ),
             ),
             const SizedBox(height: 20),
-
             Expanded(
               child: ListView.builder(
                 itemCount: currentLesson.options.length,
@@ -186,9 +254,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         if (isAnswerChecked) {
                           nextLesson();
                         } else {
-                          setState(() {
-                            isAnswerChecked = true;
-                          });
+                          checkAnswer();
                         }
                       },
                 child: Text(

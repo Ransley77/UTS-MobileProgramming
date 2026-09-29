@@ -1,6 +1,6 @@
 import '../models/lesson.dart';
 
-const List<Lesson> lessons = [
+final List<Lesson> lessonsJepang = [
   Lesson(
     type: TipeSoal.pilihanganda,
     question: 'Apa arti dari みず?',
@@ -12,7 +12,6 @@ const List<Lesson> lessons = [
     ],
     correctAnswer: 'Air',
   ),
-
   Lesson(
     type: TipeSoal.pilihanganda,
     question: 'Apa arti dari ねこ?',
