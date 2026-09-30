@@ -3,6 +3,8 @@ import '../models/lesson.dart';
 import '../lesson_data/lesson_data_jepang.dart';
 import '../lesson_data/lesson_data_inggris.dart';
 import '../lesson_data/lesson_data_spain.dart';
+import '../widgets/lesson_progress_header.dart';
+import '../widgets/lesson_answer_area.dart';
 
 class LessonScreen extends StatefulWidget {
   final String language;
@@ -114,31 +116,9 @@ class _LessonScreenState extends State<LessonScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 12,
-                      backgroundColor: Colors.grey.shade300,
-                      color: Colors.green,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Row(
-                  children: List.generate(
-                    3,
-                    (index) => Icon(
-                      Icons.favorite,
-                      color: index < lives ? Colors.red : Colors.grey.shade300,
-                      size: 24,
-                    ),
-                  ),
-                ),
-              ],
+            LessonProgressHeader(
+              progress: progress,
+              lives: lives,
             ),
             const SizedBox(height: 20),
             Row(
@@ -161,24 +141,11 @@ class _LessonScreenState extends State<LessonScreen> {
               ],
             ),
             const SizedBox(height: 15),
-            Container(
-              constraints: const BoxConstraints(minHeight: 80),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300, width: 2),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                selectedAnswer ?? 'Pilih atau ketik jawaban di sini...',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: selectedAnswer == null ? Colors.grey : Colors.black,
-                ),
-              ),
+            
+            AnswerArea(
+              selectedAnswer: selectedAnswer,
             ),
+            
             const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
@@ -245,7 +212,7 @@ class _LessonScreenState extends State<LessonScreen> {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.orange, 
                   foregroundColor: Colors.white,
                 ),
                 onPressed: selectedAnswer == null
