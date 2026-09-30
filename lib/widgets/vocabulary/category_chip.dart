@@ -10,14 +10,14 @@ class CategoryChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.1), // Warna dasar sementara
+        color: Colors.orange.withAlpha(26),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue, width: 1),
+        border: Border.all(color: Colors.orange, width: 1),
       ),
       child: Text(
         label,
         style: const TextStyle(
-          color: Colors.blue,
+          color: Colors.orange,
           fontWeight: FontWeight.bold,
           fontSize: 12,
         ),

@@ -10,7 +10,7 @@ class AudioButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.volume_up_rounded),
-      color: Colors.blue,
+      color: Colors.orange,
       iconSize: 28.0,
       onPressed: onPlay ?? () {},
     );
