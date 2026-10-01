@@ -43,7 +43,7 @@ class CustomHeader extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Row(
@@ -59,7 +59,7 @@ class CustomHeader extends StatelessWidget {
             ),
           ),
         ),
-        const Positioned(
+        Positioned(
           top: 130,
           left: 0,
           right: 0,
