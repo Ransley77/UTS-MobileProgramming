@@ -4,7 +4,7 @@ import '../lesson_data/lesson_data_jepang.dart';
 import '../lesson_data/lesson_data_inggris.dart';
 import '../lesson_data/lesson_data_spain.dart';
 import '../widgets/lesson_progress_header.dart';
-import '../widgets/lesson_answer_area.dart';
+import '../widgets/character_widget.dart';
 
 class LessonScreen extends StatefulWidget {
   final String language;
@@ -120,7 +120,12 @@ class _LessonScreenState extends State<LessonScreen> {
               progress: progress,
               lives: lives,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
+            CharacterWidget(
+              isAnswerChecked: isAnswerChecked,
+              isCorrect: selectedAnswer == currentLesson.correctAnswer,
+            ),
+            const SizedBox(height: 10),
             Row(
               children: [
                 IconButton(
@@ -141,71 +146,64 @@ class _LessonScreenState extends State<LessonScreen> {
               ],
             ),
             const SizedBox(height: 15),
-            
-            AnswerArea(
-              selectedAnswer: selectedAnswer,
-            ),
-            
-            const SizedBox(height: 20),
             Expanded(
-  child: ListView.builder(
-    itemCount: currentLesson.options.length,
-    itemBuilder: (context, index) {
-      String option = currentLesson.options[index];
-      bool isSelected = selectedAnswer == option;
+              child: ListView.builder(
+                itemCount: currentLesson.options.length,
+                itemBuilder: (context, index) {
+                  String option = currentLesson.options[index];
+                  bool isSelected = selectedAnswer == option;
 
-      Color backgroundColor = Colors.white;
-      Color borderColor = isSelected ? Colors.blue : Colors.grey;
-      Color textColor = Colors.black;
+                  Color backgroundColor = Colors.white;
+                  Color borderColor = isSelected ? Colors.blue : Colors.grey;
+                  Color textColor = Colors.black;
 
-      if (isSelected) {
-        if (isAnswerChecked) {
-          if (selectedAnswer == currentLesson.correctAnswer) {
-            backgroundColor = Colors.green; // Hijau menyeluruh jika benar
-            borderColor = Colors.green;
-            textColor = Colors.white;
-          } else {
-            backgroundColor = Colors.red; // Merah menyeluruh jika salah
-            borderColor = Colors.red;
-            textColor = Colors.white;
-          }
-        } else {
-          backgroundColor = Colors.blue.shade100;
-          borderColor = Colors.blue;
-          textColor = Colors.black;
-        }
-      }
+                  if (isSelected) {
+                    if (isAnswerChecked) {
+                      if (selectedAnswer == currentLesson.correctAnswer) {
+                        backgroundColor = Colors.green;
+                        borderColor = Colors.green;
+                        textColor = Colors.white;
+                      } else {
+                        backgroundColor = Colors.red;
+                        borderColor = Colors.red;
+                        textColor = Colors.white;
+                      }
+                    } else {
+                      backgroundColor = Colors.blue.shade100;
+                      borderColor = Colors.blue;
+                      textColor = Colors.black;
+                    }
+                  }
 
-      return Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: backgroundColor,
-            foregroundColor: textColor,
-            // Agar warna tetap hijau/merah penuh meski tombol dalam kondisi disabled
-            disabledBackgroundColor: backgroundColor,
-            disabledForegroundColor: textColor,
-            side: BorderSide(
-              color: borderColor,
-              width: 2,
-            ),
-          ),
-          onPressed: isAnswerChecked
-              ? null
-              : () {
-                  setState(() {
-                    selectedAnswer = option;
-                  });
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: backgroundColor,
+                        foregroundColor: textColor,
+                        disabledBackgroundColor: backgroundColor,
+                        disabledForegroundColor: textColor,
+                        side: BorderSide(
+                          color: borderColor,
+                          width: 2,
+                        ),
+                      ),
+                      onPressed: isAnswerChecked
+                          ? null
+                          : () {
+                              setState(() {
+                                selectedAnswer = option;
+                              });
+                            },
+                      child: Text(
+                        option,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
                 },
-          child: Text(
-            option,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-    },
-  ),
-),
+              ),
+            ),
             if (isAnswerChecked && selectedAnswer != currentLesson.correctAnswer)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
@@ -223,7 +221,7 @@ class _LessonScreenState extends State<LessonScreen> {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange, 
+                  backgroundColor: Colors.orange,
                   foregroundColor: Colors.white,
                 ),
                 onPressed: selectedAnswer == null
