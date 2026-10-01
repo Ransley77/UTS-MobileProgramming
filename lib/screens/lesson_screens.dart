@@ -148,53 +148,64 @@ class _LessonScreenState extends State<LessonScreen> {
             
             const SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
-                itemCount: currentLesson.options.length,
-                itemBuilder: (context, index) {
-                  String option = currentLesson.options[index];
-                  bool isSelected = selectedAnswer == option;
+  child: ListView.builder(
+    itemCount: currentLesson.options.length,
+    itemBuilder: (context, index) {
+      String option = currentLesson.options[index];
+      bool isSelected = selectedAnswer == option;
 
-                  Color backgroundColor = Colors.white;
-                  Color borderColor = isSelected ? Colors.blue : Colors.grey;
+      Color backgroundColor = Colors.white;
+      Color borderColor = isSelected ? Colors.blue : Colors.grey;
+      Color textColor = Colors.black;
 
-                  if (isSelected) {
-                    if (isAnswerChecked) {
-                      if (selectedAnswer == currentLesson.correctAnswer) {
-                        backgroundColor = Colors.green.shade100;
-                        borderColor = Colors.green;
-                      } else {
-                        backgroundColor = Colors.red.shade100;
-                        borderColor = Colors.red;
-                      }
-                    } else {
-                      backgroundColor = Colors.blue.shade100;
-                    }
-                  }
+      if (isSelected) {
+        if (isAnswerChecked) {
+          if (selectedAnswer == currentLesson.correctAnswer) {
+            backgroundColor = Colors.green; // Hijau menyeluruh jika benar
+            borderColor = Colors.green;
+            textColor = Colors.white;
+          } else {
+            backgroundColor = Colors.red; // Merah menyeluruh jika salah
+            borderColor = Colors.red;
+            textColor = Colors.white;
+          }
+        } else {
+          backgroundColor = Colors.blue.shade100;
+          borderColor = Colors.blue;
+          textColor = Colors.black;
+        }
+      }
 
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: backgroundColor,
-                        foregroundColor: Colors.black,
-                        side: BorderSide(
-                          color: borderColor,
-                          width: 2,
-                        ),
-                      ),
-                      onPressed: isAnswerChecked
-                          ? null
-                          : () {
-                              setState(() {
-                                selectedAnswer = option;
-                              });
-                            },
-                      child: Text(option),
-                    ),
-                  );
-                },
-              ),
+      return Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: backgroundColor,
+            foregroundColor: textColor,
+            // Agar warna tetap hijau/merah penuh meski tombol dalam kondisi disabled
+            disabledBackgroundColor: backgroundColor,
+            disabledForegroundColor: textColor,
+            side: BorderSide(
+              color: borderColor,
+              width: 2,
             ),
+          ),
+          onPressed: isAnswerChecked
+              ? null
+              : () {
+                  setState(() {
+                    selectedAnswer = option;
+                  });
+                },
+          child: Text(
+            option,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+    },
+  ),
+),
             if (isAnswerChecked && selectedAnswer != currentLesson.correctAnswer)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
