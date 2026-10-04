@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user_data.dart';
+import '../screens/quiz_screen.dart';
 
 class LessonPath extends StatefulWidget {
   const LessonPath({super.key});
@@ -9,58 +10,6 @@ class LessonPath extends StatefulWidget {
 }
 
 class _LessonPathState extends State<LessonPath> {
-  void _showQuizDialog(BuildContext context, LessonNode lesson, int index, List<LessonNode> lessons) {
-    List<String> options = [lesson.correctAnswer, lesson.wrongAnswer];
-    options.shuffle();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text('Kuis Level ${lesson.level}'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                lesson.question,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 20),
-              ...options.map((option) {
-                bool isCorrect = option == lesson.correctAnswer;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black87,
-                      minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      if (isCorrect) {
-                        _completeLevel(lesson, index, lessons);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Jawaban salah! Coba lagi.')),
-                        );
-                      }
-                    },
-                    child: Text(option),
-                  ),
-                );
-              }),
-            ],
-          ),
-        );
-      }
-    );
-  }
-
   void _completeLevel(LessonNode lesson, int index, List<LessonNode> lessons) {
     setState(() {
       lesson.isCompleted = true;
@@ -69,17 +18,49 @@ class _LessonPathState extends State<LessonPath> {
       }
     });
 
+    dummyUser.xp.value += 20;
+
     if (dummyUser.dailyMissionProgress.value < dummyUser.dailyMissionTarget) {
       dummyUser.dailyMissionProgress.value += 1;
     }
 
-    String temp = dummyUser.currentLanguage.value;
-    dummyUser.currentLanguage.value = '';
-    dummyUser.currentLanguage.value = temp;
-
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Jawaban Benar! Level ${lesson.level} Selesai (+20%)')),
+      SnackBar(content: Text('Level ${lesson.level} Selesai (+20 XP)')),
     );
+  }
+
+  Color _getActiveColor(String language) {
+    switch (language) {
+      case 'Bahasa Spanyol':
+        return Colors.red.shade600;
+      case 'Bahasa Jepang':
+        return Colors.red.shade600;
+      case 'Bahasa Korea':
+        return Colors.blue.shade600;
+      case 'Bahasa Inggris':
+        return Colors.indigo.shade700;
+      case 'Bahasa Mandarin':
+        return Colors.red.shade800;
+      default:
+        return Colors.orange.shade600;
+    }
+  }
+
+  Color _getCompletedColor(String language) {
+    switch (language) {
+      case 'Bahasa Spanyol':
+        return Colors.amber.shade500;
+      case 'Bahasa Jepang':
+        return Colors.red.shade300;
+      case 'Bahasa Korea':
+        return Colors.red.shade400;
+      case 'Bahasa Inggris':
+        return Colors.red.shade500;
+      case 'Bahasa Mandarin':
+        return Colors.amber.shade600;
+      default:
+        return Colors.orange.shade400;
+    }
   }
 
   @override
@@ -90,6 +71,8 @@ class _LessonPathState extends State<LessonPath> {
       valueListenable: dummyUser.currentLanguage,
       builder: (context, currentLang, child) {
         final lessons = dummyUser.languages[currentLang]!.lessons;
+        final Color activeColor = _getActiveColor(currentLang);
+        final Color completedColor = _getCompletedColor(currentLang);
 
         return ListView.builder(
           shrinkWrap: true,
@@ -102,14 +85,17 @@ class _LessonPathState extends State<LessonPath> {
             Color buttonColor = Colors.grey.shade300;
             IconData iconData = Icons.lock_rounded;
             double buttonSize = 70.0;
+            Color numberColor = Colors.grey.shade300;
             
             if (lesson.isCompleted) {
-              buttonColor = Colors.orange.shade400;
+              buttonColor = completedColor;
               iconData = Icons.check_rounded;
+              numberColor = completedColor;
             } else if (!lesson.isLocked) {
-              buttonColor = Colors.orange.shade600;
+              buttonColor = activeColor;
               iconData = Icons.star_rounded;
               buttonSize = 85.0;
+              numberColor = activeColor;
             }
 
             return Padding(
@@ -129,7 +115,7 @@ class _LessonPathState extends State<LessonPath> {
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: lesson.isLocked ? Colors.grey.shade300 : Colors.orange.shade300,
+                            color: numberColor,
                           ),
                         ),
                       ),
@@ -143,9 +129,23 @@ class _LessonPathState extends State<LessonPath> {
                             elevation: lesson.isLocked ? 0.0 : 8.0,
                             padding: EdgeInsets.zero,
                           ),
-                          onPressed: lesson.isLocked || lesson.isCompleted
+                          onPressed: lesson.isLocked
                               ? null 
-                              : () => _showQuizDialog(context, lesson, index, lessons),
+                              : () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => QuizScreen(
+                                        level: lesson.level,
+                                        language: currentLang,
+                                      ),
+                                    ),
+                                  ).then((isSuccess) {
+                                    if (isSuccess == true && !lesson.isCompleted) {
+                                      _completeLevel(lesson, index, lessons);
+                                    }
+                                  });
+                                },
                           child: Icon(
                             iconData, 
                             color: Colors.white, 
