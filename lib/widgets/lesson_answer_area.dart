@@ -9,6 +9,7 @@ class LessonAnswerArea extends StatelessWidget {
   final TextEditingController typeController;
   final List<String> selectedWords;
   final ValueChanged<String> onWordTapped;
+  final VoidCallback? onPlayAudio;
 
   const LessonAnswerArea({
     super.key,
@@ -19,6 +20,7 @@ class LessonAnswerArea extends StatelessWidget {
     required this.typeController,
     required this.selectedWords,
     required this.onWordTapped,
+    this.onPlayAudio,
   });
 
   @override
@@ -30,7 +32,35 @@ class LessonAnswerArea extends StatelessWidget {
         return _buildKetikkan();
       case TipeSoal.susunkata:
         return _buildSusunKata();
+      case TipeSoal.dengarkata:
+        return _buildDengarKata();
     }
+  }
+
+  Widget _buildDengarKata() {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: onPlayAudio,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.lightBlue.shade50,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.lightBlue, width: 2),
+            ),
+            child: const Icon(Icons.volume_up_rounded, size: 48, color: Colors.lightBlue),
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          "Ketuk untuk mendengarkan",
+          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 16),
+        Expanded(child: _buildPilihanGanda()),
+      ],
+    );
   }
 
   Widget _buildPilihanGanda() {
@@ -43,7 +73,7 @@ class LessonAnswerArea extends StatelessWidget {
         bool isSelected = selectedAnswer == option;
 
         Color backgroundColor = Colors.white;
-        Color borderColor = isSelected ? Colors.blue : Colors.grey.shade300;
+        Color borderColor = isSelected ? Colors.lightBlue : Colors.grey.shade300;
         Color textColor = Colors.black;
 
         if (isSelected) {
@@ -53,8 +83,8 @@ class LessonAnswerArea extends StatelessWidget {
             borderColor = isCorrect ? Colors.green : Colors.red;
             textColor = Colors.white;
           } else {
-            backgroundColor = Colors.blue.shade50;
-            borderColor = Colors.blue;
+            backgroundColor = Colors.lightBlue.shade50;
+            borderColor = Colors.lightBlue;
           }
         }
 
@@ -101,7 +131,7 @@ class LessonAnswerArea extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.blue, width: 2),
+              borderSide: const BorderSide(color: Colors.lightBlue, width: 2),
             ),
           ),
         ),

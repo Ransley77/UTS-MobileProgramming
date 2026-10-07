@@ -2,6 +2,7 @@ enum TipeSoal {
   pilihanganda,
   ketikkan,
   susunkata,
+  dengarkata,
 }
 
 class Lesson {
@@ -9,6 +10,7 @@ class Lesson {
   final String question;
   final List<String> options;
   final String correctAnswer;
+  
 
   const Lesson({
     required this.type,
