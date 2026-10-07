@@ -60,7 +60,6 @@ class LessonAnswerArea extends StatelessWidget {
             style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 16),
-          // Menggunakan _buildPilihanGanda langsung di dalam SingleChildScrollView agar semua opsi muncul
           _buildPilihanGanda(),
         ],
       ),
@@ -75,38 +74,61 @@ class LessonAnswerArea extends StatelessWidget {
       itemBuilder: (context, index) {
         String option = lesson.options[index];
         bool isSelected = selectedAnswer == option;
+        
+        bool isCorrectOption = option.toLowerCase() == lesson.correctAnswer.toLowerCase();
 
         Color backgroundColor = Colors.white;
-        Color borderColor = isSelected ? Colors.lightBlue : Colors.grey.shade300;
-        Color textColor = Colors.black;
+        Color borderColor = Colors.grey.shade300;
+        Color textColor = Colors.black87;
 
-        if (isSelected) {
-          if (isAnswerChecked) {
-            bool isCorrect = selectedAnswer?.toLowerCase() == lesson.correctAnswer.toLowerCase();
-            backgroundColor = isCorrect ? Colors.green : Colors.red;
-            borderColor = isCorrect ? Colors.green : Colors.red;
-            textColor = Colors.white;
+        if (isAnswerChecked) {
+          if (isCorrectOption) {
+            backgroundColor = const Color(0xFFD7FBE8);
+            borderColor = const Color(0xFF58CC02);
+            textColor = const Color(0xFF2B7A0B);
+          } else if (isSelected) {
+            backgroundColor = const Color(0xFFFFDFE0);
+            borderColor = const Color(0xFFFF4B4B);
+            textColor = const Color(0xFF9E1A1A);
           } else {
-            backgroundColor = Colors.lightBlue.shade50;
-            borderColor = Colors.lightBlue;
+            backgroundColor = Colors.white;
+            borderColor = Colors.grey.shade300;
+            textColor = Colors.black54;
+          }
+        } else {
+          if (isSelected) {
+            backgroundColor = const Color(0xFFDDF4FF);
+            borderColor = const Color(0xFF1CB0F6);
+            textColor = const Color(0xFF0077B6);
           }
         }
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: backgroundColor,
-              foregroundColor: textColor,
-              elevation: 0,
-              side: BorderSide(color: borderColor, width: 2),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-            onPressed: isAnswerChecked ? null : () => onAnswerSelected(option),
-            child: Text(
-              option,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor, width: 2),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: isAnswerChecked ? null : () => onAnswerSelected(option),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    option,
+                    style: TextStyle(
+                      fontSize: 16, 
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         );
@@ -124,7 +146,7 @@ class LessonAnswerArea extends StatelessWidget {
           decoration: InputDecoration(
             hintText: 'Ketikkan jawaban Anda...',
             filled: true,
-            fillColor: Colors.grey.shade100,
+            fillColor: Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Colors.grey.shade300, width: 2),
@@ -151,7 +173,7 @@ class LessonAnswerArea extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 60),
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.grey.shade100,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey.shade300, width: 2),
           ),
