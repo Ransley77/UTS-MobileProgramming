@@ -16,14 +16,11 @@ class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  ConsumerState<ProfileScreen> createState() =>
-      _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState
-    extends ConsumerState<ProfileScreen> {
-  final ProfileStorageService _storageService =
-      ProfileStorageService();
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  final ProfileStorageService _storageService = ProfileStorageService();
 
   @override
   void initState() {
@@ -38,13 +35,11 @@ class _ProfileScreenState
       return;
     }
 
-    ref.read(profileProvider.notifier).state =
-        profile;
+    ref.read(profileProvider.notifier).state = profile;
   }
 
   Future<void> _updateProfile(ProfileData profile) async {
-    ref.read(profileProvider.notifier).state =
-        profile;
+    ref.read(profileProvider.notifier).state = profile;
 
     await _storageService.saveProfile(profile);
   }
@@ -52,10 +47,7 @@ class _ProfileScreenState
   void _openEditProfile() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) =>
-            const EditProfileScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
     );
   }
 
@@ -66,22 +58,13 @@ class _ProfileScreenState
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            20,
-            20,
-            20,
-            32,
-          ),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Profil',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
 
@@ -94,9 +77,7 @@ class _ProfileScreenState
 
               const SizedBox(height: 18),
 
-              ProfileEditButton(
-                onPressed: _openEditProfile,
-              ),
+              ProfileEditButton(onPressed: _openEditProfile),
 
               const SizedBox(height: 24),
 
@@ -132,10 +113,7 @@ class _ProfileScreenState
 
               const Text(
                 'Progress Belajar',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 10),
@@ -150,10 +128,7 @@ class _ProfileScreenState
 
               const Text(
                 'Pencapaian',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 10),
@@ -164,35 +139,30 @@ class _ProfileScreenState
                 mainAxisSpacing: 10,
                 childAspectRatio: 1.05,
                 shrinkWrap: true,
-                physics:
-                    const NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 children: const [
                   AchievementCard(
                     icon: Icons.school,
                     title: 'First Lesson',
-                    description:
-                        'Menyelesaikan lesson pertama',
+                    description: 'Menyelesaikan lesson pertama',
                     unlocked: true,
                   ),
                   AchievementCard(
                     icon: Icons.local_fire_department,
                     title: '7 Day Streak',
-                    description:
-                        'Belajar selama 7 hari',
+                    description: 'Belajar selama 7 hari',
                     unlocked: true,
                   ),
                   AchievementCard(
                     icon: Icons.star,
                     title: 'Perfect Quiz',
-                    description:
-                        'Mendapat nilai sempurna',
+                    description: 'Mendapat nilai sempurna',
                     unlocked: true,
                   ),
                   AchievementCard(
                     icon: Icons.emoji_events,
                     title: 'Vocabulary Master',
-                    description:
-                        'Menguasai 100 kosakata',
+                    description: 'Menguasai 100 kosakata',
                     unlocked: false,
                   ),
                 ],
@@ -202,10 +172,7 @@ class _ProfileScreenState
 
               const Text(
                 'Preferensi',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 10),
@@ -213,11 +180,7 @@ class _ProfileScreenState
               LanguageSelector(
                 currentLanguage: profile.language,
                 onChanged: (value) {
-                  _updateProfile(
-                    profile.copyWith(
-                      language: value,
-                    ),
-                  );
+                  _updateProfile(profile.copyWith(language: value));
                 },
               ),
 
@@ -226,16 +189,10 @@ class _ProfileScreenState
               SettingsTile(
                 icon: Icons.notifications,
                 title: 'Notifikasi',
-                subtitle:
-                    'Pengingat untuk belajar',
-                value:
-                    profile.notificationsEnabled,
+                subtitle: 'Pengingat untuk belajar',
+                value: profile.notificationsEnabled,
                 onChanged: (value) {
-                  _updateProfile(
-                    profile.copyWith(
-                      notificationsEnabled: value,
-                    ),
-                  );
+                  _updateProfile(profile.copyWith(notificationsEnabled: value));
                 },
               ),
 
@@ -244,15 +201,10 @@ class _ProfileScreenState
               SettingsTile(
                 icon: Icons.volume_up,
                 title: 'Suara',
-                subtitle:
-                    'Suara pada latihan dan kuis',
+                subtitle: 'Suara pada latihan dan kuis',
                 value: profile.soundEnabled,
                 onChanged: (value) {
-                  _updateProfile(
-                    profile.copyWith(
-                      soundEnabled: value,
-                    ),
-                  );
+                  _updateProfile(profile.copyWith(soundEnabled: value));
                 },
               ),
             ],
