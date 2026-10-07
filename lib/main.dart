@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'screens/vocabulary_screen.dart';
+import 'screens/main_screen.dart';
 
 void main() {
-  runApp(const QuadraApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class QuadraApp extends StatelessWidget {
-  const QuadraApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return MaterialApp(
       title: 'Quadra',
-      home: VocabularyScreen(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+        useMaterial3: true,
+      ),
+      home: const MainScreen(),
     );
   }
 }

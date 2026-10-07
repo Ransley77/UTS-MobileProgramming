@@ -35,7 +35,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flutter_tts: ^4.2.5
-
+  flutter_riverpod: ^3.0.0
+  shared_preferences: ^2.5.3
+  image_picker: ^1.2.0
+  audioplayers: ^6.0.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -84,7 +88,7 @@ flutter:
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+  #         style: bold
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
