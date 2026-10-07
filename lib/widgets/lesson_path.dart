@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user_data.dart';
-import '../screens/quiz_screen.dart';
+import '../screens/lesson_screens.dart'; // Ganti QuizScreen ke LessonScreen
 
 class LessonPath extends StatefulWidget {
   const LessonPath({super.key});
@@ -10,6 +10,24 @@ class LessonPath extends StatefulWidget {
 }
 
 class _LessonPathState extends State<LessonPath> {
+  // Mapper untuk menyesuaikan string Bahasa di UserData ke format kode LessonScreen
+  String _mapLanguageCode(String fullLanguageName) {
+    switch (fullLanguageName) {
+      case 'Bahasa Spanyol':
+        return 'spain';
+      case 'Bahasa Jepang':
+        return 'jepang';
+      case 'Bahasa Inggris':
+        return 'inggris';
+      case 'Bahasa Korea':
+        return 'korea';
+      case 'Bahasa Mandarin':
+        return 'mandarin';
+      default:
+        return 'spain';
+    }
+  }
+
   void _completeLevel(LessonNode lesson, int index, List<LessonNode> lessons) {
     setState(() {
       lesson.isCompleted = true;
@@ -32,7 +50,6 @@ class _LessonPathState extends State<LessonPath> {
   Color _getActiveColor(String language) {
     switch (language) {
       case 'Bahasa Spanyol':
-        return Colors.red.shade600;
       case 'Bahasa Jepang':
         return Colors.red.shade600;
       case 'Bahasa Korea':
@@ -81,12 +98,12 @@ class _LessonPathState extends State<LessonPath> {
           itemBuilder: (context, index) {
             final lesson = lessons[index];
             final double offsetX = zigzagOffsets[index % zigzagOffsets.length];
-            
+
             Color buttonColor = Colors.grey.shade300;
             IconData iconData = Icons.lock_rounded;
             double buttonSize = 70.0;
             Color numberColor = Colors.grey.shade300;
-            
+
             if (lesson.isCompleted) {
               buttonColor = completedColor;
               iconData = Icons.check_rounded;
@@ -130,14 +147,16 @@ class _LessonPathState extends State<LessonPath> {
                             padding: EdgeInsets.zero,
                           ),
                           onPressed: lesson.isLocked
-                              ? null 
+                              ? null
                               : () {
+                                  // Pemetaan nama bahasa ke kode 'spain', 'jepang', dll.
+                                  final String langCode = _mapLanguageCode(currentLang);
+
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => QuizScreen(
-                                        level: lesson.level,
-                                        language: currentLang,
+                                      builder: (context) => LessonScreen(
+                                        language: langCode,
                                       ),
                                     ),
                                   ).then((isSuccess) {
@@ -147,8 +166,8 @@ class _LessonPathState extends State<LessonPath> {
                                   });
                                 },
                           child: Icon(
-                            iconData, 
-                            color: Colors.white, 
+                            iconData,
+                            color: Colors.white,
                             size: buttonSize * 0.45,
                           ),
                         ),

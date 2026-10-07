@@ -21,7 +21,7 @@ class LessonProgressHeader extends StatelessWidget {
               value: progress,
               minHeight: 12,
               backgroundColor: Colors.grey.shade300,
-              color: Colors.orange, // <-- Diubah dari Colors.green ke Colors.orange
+              color: Colors.orange, 
             ),
           ),
         ),
