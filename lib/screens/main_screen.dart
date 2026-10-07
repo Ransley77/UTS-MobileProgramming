@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart'; 
-import 'vocab_screen.dart'; 
-import 'profile_screen.dart'; 
+
+import 'home_screen.dart';
+import 'vocabulary_screen.dart';
+import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const VocabScreen(), 
+    VocabularyScreen(),
     const ProfileScreen(),
   ];
 
@@ -44,7 +45,7 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.translate_rounded), 
+            icon: Icon(Icons.translate_rounded),
             label: 'Vocab',
           ),
           BottomNavigationBarItem(
