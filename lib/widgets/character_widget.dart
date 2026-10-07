@@ -12,11 +12,11 @@ class CharacterWidget extends StatelessWidget {
 
   String get characterAsset {
     if (!isAnswerChecked) {
-      return 'assets/images/mascot_idle.gif';
+      return 'assets/image/iddle.gif'; 
     } else if (isCorrect) {
-      return 'assets/images/mascot_happy.gif';
+      return 'assets/image/happy.gif';      
     } else {
-      return 'assets/images/mascot_sad.gif';
+      return 'assets/image/sad.gif';       
     }
   }
 
@@ -42,16 +42,8 @@ class CharacterWidget extends StatelessWidget {
             }
           }
 
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 80, color: color),
-              const SizedBox(height: 4),
-              Text(
-                'Slot Karakter: ${characterAsset.split('/').last}',
-                style: const TextStyle(fontSize: 10, color: Colors.grey),
-              ),
-            ],
+          return Center(
+            child: Icon(icon, size: 80, color: color),
           );
         },
       ),

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../models/lesson.dart';
@@ -78,7 +79,6 @@ class _LessonScreenState extends State<LessonScreen> {
   void _initTts() async {
     await _flutterTts.setLanguage(ttsLanguageCode);
     await _flutterTts.setSpeechRate(0.45);
-    _speakQuestion();
   }
 
   void _speakQuestion() async {
@@ -91,6 +91,7 @@ class _LessonScreenState extends State<LessonScreen> {
   void checkAnswer() async {
     Lesson currentLesson = sessionLessons[currentIndex];
 
+    // Ambil jawaban berdasarkan tipe soal
     if (currentLesson.type == TipeSoal.ketikkan) {
       selectedAnswer = _typeController.text.trim();
     } else if (currentLesson.type == TipeSoal.susunkata) {
@@ -100,16 +101,40 @@ class _LessonScreenState extends State<LessonScreen> {
     bool isCorrect = (selectedAnswer?.toLowerCase() == currentLesson.correctAnswer.toLowerCase());
 
     if (isCorrect) {
-      await AudioHelper.playCorrect();
+      // Bungkus audio dengan try-catch agar jika file audio gagal diputar, UI tetap muncul
+      try {
+        await AudioHelper.playCorrect();
+      } catch (e) {
+        debugPrint("Gagal memutar audio correct: $e");
+      }
+
       setState(() {
         answerState = true;
       });
     } else {
-      await AudioHelper.playFalse();
+      try {
+        await AudioHelper.playFalse();
+      } catch (e) {
+        debugPrint("Gagal memutar audio false: $e");
+      }
+
       setState(() {
         answerState = false;
         lives--;
       });
+
+      // Tampilkan dialog jika nyawa habis
+      if (lives <= 0) {
+        if (!mounted) return;
+        showResultDialog(
+          context: context,
+          isWin: false,
+          totalXP: 0,
+          onContinue: () {
+            Navigator.pop(context, false);
+          },
+        );
+      }
     }
   }
 
@@ -128,13 +153,24 @@ class _LessonScreenState extends State<LessonScreen> {
         _typeController.clear();
         _selectedWords.clear();
       });
-      _speakQuestion();
     } else {
       await ProgressHelper.unlockNextNode(widget.language, 1);
-      await AudioHelper.playDoneAndLevelUp();
+      
+      try {
+        await AudioHelper.playDoneAndLevelUp();
+      } catch (e) {
+        debugPrint("Gagal memutar audio done: $e");
+      }
 
       if (!mounted) return;
-      Navigator.pop(context, true);
+      showResultDialog(
+        context: context,
+        isWin: true,
+        totalXP: 20,
+        onContinue: () {
+          Navigator.pop(context, true);
+        },
+      );
     }
   }
 
@@ -150,7 +186,11 @@ class _LessonScreenState extends State<LessonScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/image/sad.gif', height: 80),
+              Image.asset(
+                'assets/image/sad.gif', 
+                height: 80,
+                errorBuilder: (context, error, stackTrace) => const Icon(Icons.sentiment_dissatisfied, size: 80, color: Colors.orange),
+              ),
               const SizedBox(height: 16),
               const Text(
                 'You will lose all your progress in this lesson.',
@@ -249,7 +289,11 @@ class _LessonScreenState extends State<LessonScreen> {
                         lesson: currentLesson,
                         selectedAnswer: selectedAnswer,
                         isAnswerChecked: answerState != null,
-                        onAnswerSelected: (val) => setState(() => selectedAnswer = val),
+                        onAnswerSelected: (val) {
+                          setState(() {
+                            selectedAnswer = val;
+                          });
+                        },
                         typeController: _typeController,
                         selectedWords: _selectedWords,
                         onWordTapped: (word) {
@@ -258,7 +302,10 @@ class _LessonScreenState extends State<LessonScreen> {
                               _selectedWords.remove(word);
                             } else {
                               _selectedWords.add(word);
-                            }
+                            } 
+                            selectedAnswer = _selectedWords.isNotEmpty 
+                                ? _selectedWords.join(' ') 
+                                : null;
                           });
                         },
                         onPlayAudio: _speakQuestion,
@@ -385,4 +432,92 @@ class _LessonScreenState extends State<LessonScreen> {
       child: SafeArea(child: content),
     );
   }
+}
+
+void showResultDialog({
+  required BuildContext context,
+  required bool isWin,
+  required int totalXP,
+  required VoidCallback onContinue,
+}) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+        child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  isWin ? 'assets/image/happy.gif' : 'assets/image/sad.gif',
+                  height: 120,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      isWin ? Icons.emoji_events : Icons.sentiment_very_dissatisfied,
+                      size: 80,
+                      color: isWin ? Colors.orange : Colors.red,
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  isWin ? 'CONGRATS!' : 'GAME OVER',
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  isWin
+                      ? 'Kamu berhasil menyelesaikan pelajaran ini!\n+$totalXP XP'
+                      : 'Jangan menyerah! Coba pelajari lagi kosakatanya.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onContinue();
+                    },
+                    child: Text(
+                      isWin ? 'LANJUTKAN' : 'COBA LAGI',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }

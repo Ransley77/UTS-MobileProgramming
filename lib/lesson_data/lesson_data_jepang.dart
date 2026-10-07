@@ -46,37 +46,37 @@ final List<Lesson> lessonsJepang = [
 
   const Lesson(
     type: TipeSoal.ketikkan,
-    question: 'Ketikkan romaji dari "Terima kasih" (arigatou):',
+    question: 'Ketikkan romaji dari "Terima kasih" :',
     options: [],
     correctAnswer: 'arigatou',
   ),
   const Lesson(
     type: TipeSoal.ketikkan,
-    question: 'Ketikkan romaji dari "Selamat pagi" (ohayou):',
+    question: 'Ketikkan romaji dari "Selamat pagi" :',
     options: [],
     correctAnswer: 'ohayou',
   ),
   const Lesson(
     type: TipeSoal.ketikkan,
-    question: 'Ketikkan romaji dari "Air" (mizu):',
+    question: 'Ketikkan romaji dari "Air":',
     options: [],
     correctAnswer: 'mizu',
   ),
   const Lesson(
     type: TipeSoal.ketikkan,
-    question: 'Ketikkan romaji dari "Maaf" (gomen):',
+    question: 'Ketikkan romaji dari "Maaf" :',
     options: [],
     correctAnswer: 'gomen',
   ),
   const Lesson(
     type: TipeSoal.ketikkan,
-    question: 'Ketikkan romaji dari "Kucing" (neko):',
+    question: 'Ketikkan romaji dari "Kucing" :',
     options: [],
     correctAnswer: 'neko',
   ),
   const Lesson(
     type: TipeSoal.ketikkan,
-    question: 'Ketikkan romaji dari "Sekolah" (gakkou):',
+    question: 'Ketikkan romaji dari "Sekolah" :',
     options: [],
     correctAnswer: 'gakkou',
   ),

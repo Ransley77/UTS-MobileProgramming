@@ -38,28 +38,32 @@ class LessonAnswerArea extends StatelessWidget {
   }
 
   Widget _buildDengarKata() {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: onPlayAudio,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.lightBlue.shade50,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.lightBlue, width: 2),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: onPlayAudio,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.lightBlue.shade50,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.lightBlue, width: 2),
+              ),
+              child: const Icon(Icons.volume_up_rounded, size: 48, color: Colors.lightBlue),
             ),
-            child: const Icon(Icons.volume_up_rounded, size: 48, color: Colors.lightBlue),
           ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          "Ketuk untuk mendengarkan",
-          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(height: 16),
-        Expanded(child: _buildPilihanGanda()),
-      ],
+          const SizedBox(height: 8),
+          const Text(
+            "Ketuk untuk mendengarkan",
+            style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 16),
+          // Menggunakan _buildPilihanGanda langsung di dalam SingleChildScrollView agar semua opsi muncul
+          _buildPilihanGanda(),
+        ],
+      ),
     );
   }
 
