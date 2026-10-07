@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/lesson_screens.dart'; // Import halaman LessonScreen kamu
+import 'screens/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,13 +11,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Quadra',
       debugShowCheckedModeBanner: false,
-      title: 'Aplikasi Belajar Bahasa',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
-      home: const LessonScreen(language: 'jepang'), 
+      home: const MainScreen(),
     );
   }
 }
