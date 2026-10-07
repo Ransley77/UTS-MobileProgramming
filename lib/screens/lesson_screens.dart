@@ -43,6 +43,14 @@ class _LessonScreenState extends State<LessonScreen> {
     _initTts();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(const AssetImage('assets/image/happy.gif'), context);
+    precacheImage(const AssetImage('assets/image/sad.gif'), context);
+    precacheImage(const AssetImage('assets/image/levelup.gif'), context);
+  }
+
   void _initSession() {
     List<Lesson> allLessons = activeLessons;
     allLessons.shuffle();
@@ -88,10 +96,13 @@ class _LessonScreenState extends State<LessonScreen> {
     }
   }
 
+  bool checkLevelUpStatus() {
+    return true;
+  }
+
   void checkAnswer() async {
     Lesson currentLesson = sessionLessons[currentIndex];
 
-    // Ambil jawaban berdasarkan tipe soal
     if (currentLesson.type == TipeSoal.ketikkan) {
       selectedAnswer = _typeController.text.trim();
     } else if (currentLesson.type == TipeSoal.susunkata) {
@@ -101,11 +112,10 @@ class _LessonScreenState extends State<LessonScreen> {
     bool isCorrect = (selectedAnswer?.toLowerCase() == currentLesson.correctAnswer.toLowerCase());
 
     if (isCorrect) {
-      // Bungkus audio dengan try-catch agar jika file audio gagal diputar, UI tetap muncul
       try {
-        await AudioHelper.playCorrect();
+        AudioHelper.playCorrect();
       } catch (e) {
-        debugPrint("Gagal memutar audio correct: $e");
+        debugPrint("Gagal memutar audio: $e");
       }
 
       setState(() {
@@ -113,7 +123,7 @@ class _LessonScreenState extends State<LessonScreen> {
       });
     } else {
       try {
-        await AudioHelper.playFalse();
+        AudioHelper.playFalse();
       } catch (e) {
         debugPrint("Gagal memutar audio false: $e");
       }
@@ -123,12 +133,13 @@ class _LessonScreenState extends State<LessonScreen> {
         lives--;
       });
 
-      // Tampilkan dialog jika nyawa habis
       if (lives <= 0) {
         if (!mounted) return;
+        AudioHelper.playLose();
         showResultDialog(
           context: context,
           isWin: false,
+          isLevelUp: false,
           totalXP: 0,
           onContinue: () {
             Navigator.pop(context, false);
@@ -156,19 +167,32 @@ class _LessonScreenState extends State<LessonScreen> {
     } else {
       await ProgressHelper.unlockNextNode(widget.language, 1);
       
-      try {
-        await AudioHelper.playDoneAndLevelUp();
-      } catch (e) {
-        debugPrint("Gagal memutar audio done: $e");
-      }
+      bool isSessionEndLevelUp = checkLevelUpStatus(); 
 
       if (!mounted) return;
+
+      AudioHelper.playDone();
+
       showResultDialog(
         context: context,
         isWin: true,
+        isLevelUp: false,
         totalXP: 20,
         onContinue: () {
-          Navigator.pop(context, true);
+          if (isSessionEndLevelUp) {
+            AudioHelper.playLevelUp();
+            showResultDialog(
+              context: context,
+              isWin: true,
+              isLevelUp: true,
+              totalXP: 20,
+              onContinue: () {
+                Navigator.pop(context, true);
+              },
+            );
+          } else {
+            Navigator.pop(context, true);
+          }
         },
       );
     }
@@ -437,13 +461,14 @@ class _LessonScreenState extends State<LessonScreen> {
 void showResultDialog({
   required BuildContext context,
   required bool isWin,
+  bool isLevelUp = false,
   required int totalXP,
   required VoidCallback onContinue,
 }) {
   showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (BuildContext context) {
+    builder: (BuildContext dialogContext) {
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
         child: Dialog(
@@ -457,31 +482,39 @@ void showResultDialog({
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
-                  isWin ? 'assets/image/happy.gif' : 'assets/image/sad.gif',
+                  !isWin 
+                      ? 'assets/image/sad.gif' 
+                      : (isLevelUp ? 'assets/image/levelup.gif' : 'assets/image/happy.gif'),
                   height: 120,
                   errorBuilder: (context, error, stackTrace) {
                     return Icon(
-                      isWin ? Icons.emoji_events : Icons.sentiment_very_dissatisfied,
+                      !isWin 
+                          ? Icons.sentiment_very_dissatisfied 
+                          : (isLevelUp ? Icons.military_tech : Icons.emoji_events),
                       size: 80,
-                      color: isWin ? Colors.orange : Colors.red,
+                      color: !isWin ? Colors.red : (isLevelUp ? Colors.purple : Colors.orange),
                     );
                   },
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  isWin ? 'CONGRATS!' : 'GAME OVER',
-                  style: const TextStyle(
+                  !isWin 
+                      ? 'GAME OVER' 
+                      : (isLevelUp ? 'LEVEL UP!' : 'CONGRATS!'),
+                  style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.orange,
+                    color: !isWin ? Colors.red : (isLevelUp ? Colors.purple : Colors.orange),
                     letterSpacing: 1.2,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  isWin
-                      ? 'Kamu berhasil menyelesaikan pelajaran ini!\n+$totalXP XP'
-                      : 'Jangan menyerah! Coba pelajari lagi kosakatanya.',
+                  !isWin
+                      ? 'Jangan menyerah! Coba pelajari lagi kosakatanya.'
+                      : (isLevelUp 
+                          ? 'Hebat! Kamu naik ke level berikutnya!\n+$totalXP XP' 
+                          : 'Kamu berhasil menyelesaikan pelajaran ini!\n+$totalXP XP'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -494,17 +527,17 @@ void showResultDialog({
                   height: 48,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: !isWin ? Colors.red : (isLevelUp ? Colors.purple : Colors.orange),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(dialogContext);
                       onContinue();
                     },
                     child: Text(
-                      isWin ? 'LANJUTKAN' : 'COBA LAGI',
+                      !isWin ? 'COBA LAGI' : 'LANJUTKAN',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
