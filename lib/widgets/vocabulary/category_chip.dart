@@ -2,25 +2,30 @@ import 'package:flutter/material.dart';
 
 class CategoryChip extends StatelessWidget {
   final String label;
+  final bool isSelected;
+  final ValueChanged<bool> onSelected;
 
-  const CategoryChip({super.key, required this.label});
+  const CategoryChip({
+    super.key,
+    required this.label,
+    required this.isSelected,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.orange.withAlpha(26),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.orange, width: 1),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Colors.orange,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: ChoiceChip(
+        label: Text(
+          label == 'Favorit' ? '❤ Favorit' : label,
+          style: TextStyle(color: isSelected ? Colors.white : Colors.orange),
         ),
+        selected: isSelected,
+        selectedColor: Colors.orange,
+        backgroundColor: Colors.white,
+        side: const BorderSide(color: Colors.orange),
+        onSelected: onSelected,
       ),
     );
   }

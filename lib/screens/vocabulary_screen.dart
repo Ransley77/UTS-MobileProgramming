@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import '../data/vocabulary_data.dart';
-import '../widgets/vocabulary/audio_button.dart';
-import '../widgets/vocabulary/example_sentence.dart';
-import '../widgets/vocabulary/word_detail.dart';
+import '../widgets/vocabulary/category_chip.dart';
+import '../widgets/vocabulary/vocabulary_card.dart';
 
 class VocabularyScreen extends StatefulWidget {
   const VocabularyScreen({super.key});
@@ -110,8 +109,33 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                ...vocabData.keys.map((lang) => _buildFilterChip(lang)),
-                _buildFilterChip('Favorit'),
+                ...vocabData.keys.map((lang) {
+                  return CategoryChip(
+                    label: lang,
+                    isSelected: selectedLanguage == lang,
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() {
+                          selectedLanguage = lang;
+                          searchQuery = '';
+                          _setTtsLanguage(lang);
+                        });
+                      }
+                    },
+                  );
+                }),
+                CategoryChip(
+                  label: 'Favorit',
+                  isSelected: selectedLanguage == 'Favorit',
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() {
+                        selectedLanguage = 'Favorit';
+                        searchQuery = '';
+                      });
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -157,129 +181,20 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                           item['word'],
                         );
 
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(color: Colors.orange.shade100),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          item['word']!,
-                                          style: const TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        WordDetail(
-                                          partOfSpeech:
-                                              item['partOfSpeech'] ?? 'noun',
-                                          phonetic: item['phonetic'] ?? '',
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          item['translation']!,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.grey.shade700,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        AudioButton(
-                                          audioUrl: '',
-                                          onPlay: () => _speak(item['word']!),
-                                        ),
-                                        IconButton(
-                                          icon: Icon(
-                                            isFavorited
-                                                ? Icons.favorite
-                                                : Icons.favorite_border,
-                                            color: isFavorited
-                                                ? Colors.red
-                                                : Colors.grey,
-                                          ),
-                                          onPressed: () =>
-                                              _toggleFavorite(item['word']!),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const Divider(height: 24),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: ExampleSentence(
-                                        sentence: item['exampleSentence']!,
-                                        meaning: item['exampleTranslation']!,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.volume_up,
-                                        size: 20,
-                                        color: Colors.orange,
-                                      ),
-                                      onPressed: () =>
-                                          _speak(item['exampleSentence']!),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                        return VocabularyCard(
+                          item: item,
+                          isFavorited: isFavorited,
+                          onPlayWord: () => _speak(item['word']!),
+                          onPlaySentence: () =>
+                              _speak(item['exampleSentence']!),
+                          onToggleFavorite: () =>
+                              _toggleFavorite(item['word']!),
                         );
                       },
                     ),
                   ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFilterChip(String label) {
-    final isSelected = selectedLanguage == label;
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: ChoiceChip(
-        label: Text(
-          label == 'Favorit' ? '❤ Favorit' : label,
-          style: TextStyle(color: isSelected ? Colors.white : Colors.orange),
-        ),
-        selected: isSelected,
-        selectedColor: Colors.orange,
-        backgroundColor: Colors.white,
-        side: const BorderSide(color: Colors.orange),
-        onSelected: (bool selected) {
-          if (selected) {
-            setState(() {
-              selectedLanguage = label;
-              searchQuery = '';
-              if (label != 'Favorit') {
-                _setTtsLanguage(label);
-              }
-            });
-          }
-        },
       ),
     );
   }

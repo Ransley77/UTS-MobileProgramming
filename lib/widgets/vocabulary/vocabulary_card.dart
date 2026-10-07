@@ -1,59 +1,105 @@
 import 'package:flutter/material.dart';
 
 import 'audio_button.dart';
+import 'example_sentence.dart';
+import 'favorite_button.dart';
+import 'word_detail.dart';
 
 class VocabularyCard extends StatelessWidget {
-  final String word;
-  final String translation;
-  final VoidCallback onPlayAudio;
+  final Map item;
+  final bool isFavorited;
+  final VoidCallback onPlayWord;
+  final VoidCallback onPlaySentence;
+  final VoidCallback onToggleFavorite;
 
   const VocabularyCard({
     super.key,
-    required this.word,
-    required this.translation,
-    required this.onPlayAudio,
+    required this.item,
+    required this.isFavorited,
+    required this.onPlayWord,
+    required this.onPlaySentence,
+    required this.onToggleFavorite,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.orange.shade50,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orange.shade200, width: 2),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Colors.orange.shade100),
       ),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: AudioButton(audioUrl: '', onPlay: onPlayAudio),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Align(
-              alignment: Alignment.center,
-              child: Column(
-                children: [
-                  Text(
-                    word,
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item['word']!,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      WordDetail(
+                        partOfSpeech: item['partOfSpeech'] ?? 'noun',
+                        phonetic: item['phonetic'] ?? '',
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        item['translation']!,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AudioButton(audioUrl: '', onPlay: onPlayWord),
+                    FavoriteButton(
+                      isFavorite: isFavorited,
+                      onToggle: onToggleFavorite,
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    translation,
-                    style: TextStyle(fontSize: 20, color: Colors.grey.shade700),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
-          ),
-        ],
+            const Divider(height: 24),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: ExampleSentence(
+                    sentence: item['exampleSentence']!,
+                    meaning: item['exampleTranslation']!,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.volume_up,
+                    size: 20,
+                    color: Colors.orange,
+                  ),
+                  onPressed: onPlaySentence,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
